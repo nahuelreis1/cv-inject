@@ -1,6 +1,6 @@
-// Uses relative URL. In dev, Astro proxy forwards /api to backend.
-// In production (same origin), /api hits the backend directly.
-export const API_URL = '';
+// En desarrollo: URL directa al backend (el proxy de Vite en Astro SSR no funciona con POST).
+// En producción: URL relativa (frontend y backend comparten origen).
+export const API_URL = import.meta.env.DEV ? 'http://localhost:3000' : '';
 
 export interface CVUploadResponse {
   cv_id: string;
