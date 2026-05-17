@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AppClient from './_AppClient';
+---
+
+<BaseLayout title="Dashboard">
+  <div class="flex-1 flex flex-col py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold mb-2">Workspace</h1>
+      <p class="text-text/60">Prepara tu CV para evadir los filtros automáticos.</p>
+    </div>
+
+    <div class="flex-1 flex flex-col items-center justify-center min-h-[60vh]">
+      <AppClient client:load />
+    </div>
+  </div>
+</BaseLayout>

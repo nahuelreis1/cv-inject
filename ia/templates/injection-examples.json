@@ -1,0 +1,57 @@
+[
+  {
+    "scenario": "Excel a SQL",
+    "cv_context": "Analista de Operaciones. Procesamiento de reportes diarios de ventas utilizando Excel avanzado (Power Query, macros, cruce de bases de datos con VLOOKUP y tablas dinámicas).",
+    "requirement": "SQL",
+    "expected_output": {
+      "section": "Experiencia Laboral",
+      "original_text": "Procesamiento de reportes diarios de ventas utilizando Excel avanzado (Power Query, macros, cruce de bases de datos con VLOOKUP y tablas dinámicas).",
+      "requirement": "SQL",
+      "justification": "Este candidato tiene experiencia en Excel avanzado (manejo de datos estructurados, fórmulas complejas, tablas dinámicas), lo que demuestra capacidad analítica transferible a SQL y bases de datos relacionales. La postulación requiere manejo de bases de datos, y la experiencia con datos estructurados en Excel es un indicador directo de que el candidato puede dominar esta tecnología."
+    }
+  },
+  {
+    "scenario": "Word a Documentación Técnica",
+    "cv_context": "Asistente Administrativo. Redacción de manuales de procedimientos internos y guías de usuario utilizando Microsoft Word y Google Docs.",
+    "requirement": "Documentación Técnica (Confluence/Markdown)",
+    "expected_output": {
+      "section": "Experiencia Laboral",
+      "original_text": "Redacción de manuales de procedimientos internos y guías de usuario utilizando Microsoft Word y Google Docs.",
+      "requirement": "Documentación Técnica",
+      "justification": "La experiencia en la redacción de manuales de procedimientos demuestra una fuerte capacidad para estructurar información compleja, una habilidad fundamental para la Documentación Técnica. Aunque el candidato ha utilizado herramientas ofimáticas tradicionales, los principios de claridad, organización y enfoque en el usuario son directamente aplicables a plataformas modernas como Confluence o Markdown."
+    }
+  },
+  {
+    "scenario": "JavaScript a TypeScript",
+    "cv_context": "Desarrollador Web. Creación de interfaces interactivas y consumo de APIs REST utilizando JavaScript (ES6+), React y Node.js.",
+    "requirement": "TypeScript",
+    "expected_output": {
+      "section": "Experiencia Laboral",
+      "original_text": "Creación de interfaces interactivas y consumo de APIs REST utilizando JavaScript (ES6+), React y Node.js.",
+      "requirement": "TypeScript",
+      "justification": "Este candidato posee sólidos fundamentos en JavaScript moderno (ES6+) y ecosistemas basados en componentes como React. Dado que TypeScript es un superconjunto tipado de JavaScript, la curva de aprendizaje es mínima; la lógica de programación, el manejo de asincronía y la arquitectura de aplicaciones ya están consolidados, facilitando una rápida adopción del tipado estático."
+    }
+  },
+  {
+    "scenario": "Atención al Cliente a Ventas B2B",
+    "cv_context": "Representante de Soporte. Resolución de conflictos con clientes de alto valor, retención de cuentas en riesgo y explicación de características técnicas de productos SaaS.",
+    "requirement": "Ventas B2B",
+    "expected_output": {
+      "section": "Experiencia Laboral",
+      "original_text": "Resolución de conflictos con clientes de alto valor, retención de cuentas en riesgo y explicación de características técnicas de productos SaaS.",
+      "requirement": "Ventas B2B",
+      "justification": "La experiencia en retención de cuentas y resolución de conflictos con clientes de alto valor evidencia habilidades de negociación y empatía corporativa esenciales para las Ventas B2B. El candidato ya domina la comunicación de valor técnico en entornos SaaS, lo que constituye la base del ciclo de ventas consultivas requerido para este puesto."
+    }
+  },
+  {
+    "scenario": "Photoshop a Figma",
+    "cv_context": "Diseñador Gráfico. Creación de piezas gráficas para redes sociales, retoque fotográfico y diseño de banners publicitarios utilizando Adobe Photoshop e Illustrator.",
+    "requirement": "Figma",
+    "expected_output": {
+      "section": "Experiencia Laboral",
+      "original_text": "Creación de piezas gráficas para redes sociales, retoque fotográfico y diseño de banners publicitarios utilizando Adobe Photoshop e Illustrator.",
+      "requirement": "Figma",
+      "justification": "Este candidato cuenta con un ojo crítico para el diseño, composición visual y teoría del color desarrollados a través del uso intensivo de Adobe Photoshop e Illustrator. La transición hacia herramientas de diseño de interfaces como Figma es natural, ya que los principios de diseño gráfico son universales y el candidato ya está familiarizado con entornos de trabajo basados en capas y vectores."
+    }
+  }
+]

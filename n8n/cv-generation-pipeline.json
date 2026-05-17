@@ -1,0 +1,332 @@
+{
+  "name": "CV Generation Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "cv-generation-pipeline",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "webhook-pipeline",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [0, 0],
+      "notesInFlow": true,
+      "notes": "Recibe { cv_id: uuid, job_ids: uuid[] }"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "table": "cvs",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $json.body.cv_id }}"
+            }
+          ]
+        }
+      },
+      "id": "supabase-get-cv",
+      "name": "Get CV",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [200, 0],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabaseApi",
+          "name": "Supabase API"
+        }
+      },
+      "notesInFlow": true,
+      "notes": "Lee el CV desde la tabla cvs"
+    },
+    {
+      "parameters": {
+        "jsCode": "const jobIds = $('Webhook').item.json.body.job_ids || [];\nreturn jobIds.map(id => ({ json: { job_id: id, cv_data: $input.first().json } }));"
+      },
+      "id": "code-prepare-loop",
+      "name": "Prepare Jobs Loop",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [400, 0],
+      "notesInFlow": true,
+      "notes": "Prepara el array de jobs para iterar"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "loop-jobs",
+      "name": "Loop Jobs",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 2,
+      "position": [600, 0],
+      "notesInFlow": true,
+      "notes": "Itera sobre cada job_id"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "table": "jobs",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $json.job_id }}"
+            }
+          ]
+        }
+      },
+      "id": "supabase-get-job",
+      "name": "Get Job Details",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [800, 0],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabaseApi",
+          "name": "Supabase API"
+        }
+      },
+      "notesInFlow": true,
+      "notes": "Lee los detalles del Job desde Supabase"
+    },
+    {
+      "parameters": {
+        "model": "gemini-2.5-flash",
+        "prompt": "={{ 'Analyze the match between this CV and Job. CV: ' + JSON.stringify($('Prepare Jobs Loop').item.json.cv_data) + ' Job: ' + JSON.stringify($json) + '. Return a JSON object with match_score and missing_keywords.' }}",
+        "options": {}
+      },
+      "id": "gemini-matcher",
+      "name": "Gemini Matcher",
+      "type": "n8n-nodes-base.googleGemini",
+      "typeVersion": 1,
+      "position": [1000, 0],
+      "credentials": {
+        "googleGeminiApi": {
+          "id": "googleGeminiApi",
+          "name": "Google Gemini API"
+        }
+      },
+      "notesInFlow": true,
+      "notes": "Analiza el match CV vs requisitos"
+    },
+    {
+      "parameters": {
+        "model": "gemini-2.5-flash",
+        "prompt": "={{ 'Generate prompt injection text to hide in the CV PDF to pass ATS systems based on these missing keywords: ' + $json.text + '. Return a JSON object with injection_text.' }}",
+        "options": {}
+      },
+      "id": "gemini-injector",
+      "name": "Gemini Injector",
+      "type": "n8n-nodes-base.googleGemini",
+      "typeVersion": 1,
+      "position": [1200, 0],
+      "credentials": {
+        "googleGeminiApi": {
+          "id": "googleGeminiApi",
+          "name": "Google Gemini API"
+        }
+      },
+      "notesInFlow": true,
+      "notes": "Genera justificaciones y prompt injection"
+    },
+    {
+      "parameters": {
+        "model": "gemini-2.5-flash",
+        "prompt": "={{ 'Rewrite the CV to better match the job description. CV: ' + JSON.stringify($('Prepare Jobs Loop').item.json.cv_data) + ' Job: ' + JSON.stringify($('Get Job Details').item.json) + '. Return a JSON object with rewritten_cv_text.' }}",
+        "options": {}
+      },
+      "id": "gemini-rewriter",
+      "name": "Gemini Rewriter",
+      "type": "n8n-nodes-base.googleGemini",
+      "typeVersion": 1,
+      "position": [1400, 0],
+      "credentials": {
+        "googleGeminiApi": {
+          "id": "googleGeminiApi",
+          "name": "Google Gemini API"
+        }
+      },
+      "notesInFlow": true,
+      "notes": "Reescribe el CV orientado a la vacante"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://backend:3000/api/generate-cv",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "cv_id",
+              "value": "={{ $('Prepare Jobs Loop').item.json.cv_data.id }}"
+            },
+            {
+              "name": "job_id",
+              "value": "={{ $('Prepare Jobs Loop').item.json.job_id }}"
+            },
+            {
+              "name": "rewritten_text",
+              "value": "={{ JSON.parse($json.text).rewritten_cv_text }}"
+            },
+            {
+              "name": "injection_text",
+              "value": "={{ JSON.parse($('Gemini Injector').item.json.text).injection_text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "http-generate-cv",
+      "name": "Backend Generate CV",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1600, 0],
+      "notesInFlow": true,
+      "notes": "Llama al backend para generar el PDF"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "table": "generations",
+        "updateKey": "id",
+        "columns": "status",
+        "options": {}
+      },
+      "id": "supabase-update-status",
+      "name": "Update Status",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1800, 0],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabaseApi",
+          "name": "Supabase API"
+        }
+      },
+      "notesInFlow": true,
+      "notes": "Actualiza el status a completed"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get CV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get CV": {
+      "main": [
+        [
+          {
+            "node": "Prepare Jobs Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Jobs Loop": {
+      "main": [
+        [
+          {
+            "node": "Loop Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Jobs": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Get Job Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Job Details": {
+      "main": [
+        [
+          {
+            "node": "Gemini Matcher",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Matcher": {
+      "main": [
+        [
+          {
+            "node": "Gemini Injector",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Injector": {
+      "main": [
+        [
+          {
+            "node": "Gemini Rewriter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Rewriter": {
+      "main": [
+        [
+          {
+            "node": "Backend Generate CV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Backend Generate CV": {
+      "main": [
+        [
+          {
+            "node": "Update Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Status": {
+      "main": [
+        [
+          {
+            "node": "Loop Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "cv-prompt-inject",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Optimiza tu CV para sistemas ATS con IA. 1 comando, 0 configuración.",
+  "scripts": {
+    "setup": "node setup.js",
+    "start": "node setup.js && npx concurrently -n BE,FE -c cyan,magenta \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:backend": "cd backend && npm run dev",
+    "start:frontend": "cd frontend && npm run dev",
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "build": "cd backend && npm run build && cd ../frontend && npm run build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}

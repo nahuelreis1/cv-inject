@@ -1,0 +1,112 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { Terminal, FileSearch, Zap, ShieldAlert } from 'lucide-react';
+---
+
+<BaseLayout title="Hackea el ATS">
+  <div class="relative overflow-hidden">
+    <!-- Background glow -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-primary/5 blur-[100px] rounded-full pointer-events-none"></div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16 relative z-10">
+      <div class="text-center max-w-3xl mx-auto">
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-surface/30 border border-white/10 text-text/50 text-xs font-mono mb-8">
+          <Terminal size={16} />
+          <span>Bypass ATS Systems v2.0</span>
+        </div>
+        
+        <h1 class="text-3xl md:text-5xl font-semibold tracking-tight mb-6 text-text/90">
+          ¿Cansado de que una IA<br/>
+          <span class="text-primary">rechace tu CV</span> sin leerlo?
+        </h1>
+        
+        <p class="text-base md:text-lg text-text/50 mb-10 leading-relaxed max-w-xl mx-auto">
+          Prompt Injection Laboral — la herramienta que hace que los ATS te elijan. 
+          Inyectamos texto invisible y keywords estratégicas en tu PDF para que los algoritmos de RRHH te pongan primero en la lista.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="/app" class="group relative inline-flex items-center justify-center gap-2 px-10 py-4 bg-primary text-background font-bold text-lg transition-all hover:scale-[1.03] shadow-[0_0_30px_rgba(0,245,212,0.5)] hover:shadow-[0_0_50px_rgba(0,245,212,0.7)]">
+            <span class="absolute inset-0 bg-primary/30 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+            <Zap size={20} class="relative z-10" />
+            <span class="relative z-10">Generar CV</span>
+          </a>
+          <a href="#como-funciona" class="inline-flex items-center justify-center gap-2 px-8 py-4 border border-white/10 text-text/50 font-medium hover:text-text hover:border-white/20 transition-all">
+            Saber más
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cómo funciona -->
+  <section id="como-funciona" class="py-24 bg-surface/30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">Cómo funciona el exploit</h2>
+        <p class="text-text/70 max-w-2xl mx-auto">Tres pasos simples para optimizar tu CV contra cualquier sistema de filtrado automático.</p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="bg-surface p-8 border border-white/5 relative overflow-hidden group">
+          <div class="absolute top-0 right-0 p-4 text-8xl font-black text-white/5 group-hover:text-primary/10 transition-colors">1</div>
+          <div class="w-12 h-12 bg-primary/20 flex items-center justify-center text-primary mb-6">
+            <FileSearch size={24} />
+          </div>
+          <h3 class="text-xl font-bold mb-3">Sube tu CV</h3>
+          <p class="text-text/70">Arrastra tu CV actual en formato PDF. Nuestro sistema extraerá el texto y preparará el documento base.</p>
+        </div>
+
+        <div class="bg-surface p-8 border border-white/5 relative overflow-hidden group">
+          <div class="absolute top-0 right-0 p-4 text-8xl font-black text-white/5 group-hover:text-secondary/10 transition-colors">2</div>
+          <div class="w-12 h-12 bg-secondary/20 flex items-center justify-center text-secondary mb-6">
+            <Terminal size={24} />
+          </div>
+          <h3 class="text-xl font-bold mb-3">Pega la Vacante</h3>
+          <p class="text-text/70">Ingresa la URL de LinkedIn del trabajo que quieres. La IA analizará los requisitos y keywords exactas que busca el ATS.</p>
+        </div>
+
+        <div class="bg-surface p-8 border border-white/5 relative overflow-hidden group">
+          <div class="absolute top-0 right-0 p-4 text-8xl font-black text-white/5 group-hover:text-success/10 transition-colors">3</div>
+          <div class="w-12 h-12 bg-success/20 flex items-center justify-center text-success mb-6">
+            <Zap size={24} />
+          </div>
+          <h3 class="text-xl font-bold mb-3">Descarga y Aplica</h3>
+          <p class="text-text/70">Obtén un PDF con prompt injection: texto blanco invisible con las keywords perfectas. El reclutador humano ve tu CV normal, la IA ve al candidato perfecto.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ética -->
+  <section class="py-24">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-gradient-to-br from-surface to-background border border-error/20 p-8 md:p-12 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-error/10 blur-[80px] rounded-full pointer-events-none"></div>
+        
+        <div class="flex items-start gap-6 relative z-10">
+          <div class="hidden md:flex w-16 h-16 bg-error/20 items-center justify-center text-error shrink-0">
+            <ShieldAlert size={32} />
+          </div>
+          <div>
+            <h2 class="text-3xl font-bold mb-4 flex items-center gap-3">
+              <span class="md:hidden text-error"><ShieldAlert size={28} /></span>
+              ¿Es esto ético?
+            </h2>
+            <div class="space-y-4 text-text/80 leading-relaxed">
+              <p>
+                <strong>El sistema está roto.</strong> Las empresas usan IAs deficientes que descartan al 75% de los candidatos cualificados simplemente porque no usaron el sinónimo exacto que el algoritmo esperaba.
+              </p>
+              <p>
+                Nosotros no falsificamos tu experiencia. Solo nos aseguramos de que un humano real llegue a leerla. Nivelamos la cancha dándote las mismas herramientas automatizadas que ellos usan en tu contra.
+              </p>
+              <p class="text-primary font-medium mt-6">
+                No es trampa. Es ingeniería social aplicada al reclutamiento.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

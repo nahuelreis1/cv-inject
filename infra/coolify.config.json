@@ -1,0 +1,16 @@
+{
+  "services": [
+    {
+      "name": "cv-injection-frontend",
+      "dockerfile": "infra/Dockerfile.frontend",
+      "port": 4321,
+      "domain": "cv-inject.nrlabs.com.ar"
+    },
+    {
+      "name": "cv-injection-backend",
+      "dockerfile": "infra/Dockerfile.backend",
+      "port": 3000,
+      "domain": "api.cv-inject.nrlabs.com.ar"
+    }
+  ]
+}

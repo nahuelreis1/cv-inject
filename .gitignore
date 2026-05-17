@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.astro/
+
+# Environment files (keep .env.example as template)
+.env
+.env.local
+.env.*.local
+
+# Test outputs
+*.log
+test-output*.pdf
+verify-*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# TypeScript
+*.tsbuildinfo
+
+# n8n data
+n8n_data/

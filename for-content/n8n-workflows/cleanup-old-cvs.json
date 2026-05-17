@@ -1,0 +1,180 @@
+{
+  "name": "Cleanup Old CVs",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 3 * * *"
+            }
+          ]
+        }
+      },
+      "id": "cron-trigger",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [0, 0],
+      "notesInFlow": true,
+      "notes": "Se ejecuta cada 24h a las 3am"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, file_path FROM generations WHERE created_at < now() - interval '7 days' AND status = 'completed';"
+      },
+      "id": "supabase-query",
+      "name": "Find Old Generations",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [200, 0],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabaseApi",
+          "name": "Supabase API"
+        }
+      },
+      "notesInFlow": true,
+      "notes": "Busca generaciones de más de 7 días"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "loop-cleanup",
+      "name": "Loop Cleanup",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 2,
+      "position": [400, 0],
+      "notesInFlow": true,
+      "notes": "Itera sobre cada PDF viejo"
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "={{ $env.SUPABASE_URL }}/storage/v1/object/cvs/{{ $json.file_path }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "options": {}
+      },
+      "id": "http-delete-storage",
+      "name": "Delete PDF Storage",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [600, 0],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabaseApi",
+          "name": "Supabase API"
+        }
+      },
+      "notesInFlow": true,
+      "notes": "Elimina el PDF de Supabase Storage"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "table": "generations",
+        "updateKey": "id",
+        "columns": "status",
+        "options": {}
+      },
+      "id": "supabase-update-expired",
+      "name": "Update Status Expired",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [800, 0],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabaseApi",
+          "name": "Supabase API"
+        }
+      },
+      "notesInFlow": true,
+      "notes": "Actualiza el status a expired"
+    },
+    {
+      "parameters": {
+        "jsCode": "console.log('Cleaned up generation:', $json.id);\nreturn { json: { id: $json.id, status: 'expired' } };"
+      },
+      "id": "code-log",
+      "name": "Log Cleanup",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1000, 0],
+      "notesInFlow": true,
+      "notes": "Loggea la limpieza"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Find Old Generations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Old Generations": {
+      "main": [
+        [
+          {
+            "node": "Loop Cleanup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Cleanup": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Delete PDF Storage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete PDF Storage": {
+      "main": [
+        [
+          {
+            "node": "Update Status Expired",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Status Expired": {
+      "main": [
+        [
+          {
+            "node": "Log Cleanup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Cleanup": {
+      "main": [
+        [
+          {
+            "node": "Loop Cleanup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
