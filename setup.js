@@ -7,12 +7,14 @@ const backendEnvPath = path.join(__dirname, 'backend', '.env');
 const frontendEnvPath = path.join(__dirname, 'frontend', '.env');
 const backendNodeModulesPath = path.join(__dirname, 'backend', 'node_modules');
 
+const KNOWN_FAKE_KEYS = ['your-gemini-key-here', 'dev-gemini-key', 'your-key-here', 'test-mock-key', 'your-gemini-key', 'your-deepseek-key'];
+
 function hasValidKey(envContent) {
   const lines = envContent.split('\n');
   for (const line of lines) {
     if (line.startsWith('GEMINI_API_KEY=') || line.startsWith('DEEPSEEK_API_KEY=') || line.startsWith('OPENAI_API_KEY=')) {
       const key = line.split('=')[1].trim();
-      if (key && key !== 'your-gemini-key-here' && key !== 'dev-gemini-key' && key !== 'your-key-here') {
+      if (key && !KNOWN_FAKE_KEYS.includes(key)) {
         return true;
       }
     }
@@ -20,13 +22,22 @@ function hasValidKey(envContent) {
   return false;
 }
 
+function isMockMode(envContent) {
+  return envContent.includes('GEMINI_MOCK=true');
+}
+
 async function runWizard() {
   if (fs.existsSync(backendEnvPath)) {
     const envContent = fs.readFileSync(backendEnvPath, 'utf8');
-    if (hasValidKey(envContent)) {
+    // Force reconfiguration if mock mode is on or key is fake
+    if (isMockMode(envContent)) {
+      console.log('⚠️  Mock mode detected. Real API key required for actual CV generation.\n');
+    } else if (hasValidKey(envContent)) {
       console.log('✓ Configuration found. Starting...');
       checkAndInstallDeps();
       return;
+    } else {
+      console.log('⚠️  No valid API key found. Let\'s configure your AI provider.\n');
     }
   }
 
@@ -57,14 +68,14 @@ Step 1: Choose your AI provider
 
   if (choice === '1') {
     const key = await askQuestion('Enter your Gemini API key (get one at https://aistudio.google.com/apikey): ');
-    envContent = `AI_PROVIDER=gemini\nGEMINI_API_KEY=${key}\n`;
+    envContent = `NODE_ENV=development\nPORT=3000\nAI_PROVIDER=gemini\nGEMINI_API_KEY=${key}\nGEMINI_MOCK=false\n`;
   } else if (choice === '2') {
     const key = await askQuestion('Enter your DeepSeek API key: ');
-    envContent = `AI_PROVIDER=deepseek\nDEEPSEEK_API_KEY=${key}\n`;
+    envContent = `NODE_ENV=development\nPORT=3000\nAI_PROVIDER=deepseek\nDEEPSEEK_API_KEY=${key}\nGEMINI_MOCK=false\n`;
   } else if (choice === '3') {
     const key = await askQuestion('Enter your API key: ');
     const url = await askQuestion('Enter API endpoint URL (e.g. https://api.openai.com/v1): ');
-    envContent = `AI_PROVIDER=openai-compatible\nOPENAI_API_KEY=${key}\nOPENAI_BASE_URL=${url}\n`;
+    envContent = `NODE_ENV=development\nPORT=3000\nAI_PROVIDER=openai-compatible\nOPENAI_API_KEY=${key}\nOPENAI_BASE_URL=${url}\nGEMINI_MOCK=false\n`;
   }
 
   rl.close();
